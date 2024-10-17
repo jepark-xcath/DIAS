@@ -33,7 +33,7 @@ def build_model(config):
     if config.MODEL.TYPE in model_2d:
         return getattr(models, config.MODEL.TYPE)(
             num_classes=2,
-            num_channels=8
+            num_channels=4
         ), True
     else:
         return getattr(models, config.MODEL.TYPE)(

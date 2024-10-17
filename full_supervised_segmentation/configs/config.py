@@ -11,7 +11,7 @@ _C.WORLD_SIZE = 1
 _C.SEED = 1234
 _C.AMP = True
 _C.EXPERIMENT_ID = ""
-_C.SAVE_DIR = "save_pth"
+_C.SAVE_DIR = "/mnt/d/data/train_results"
 _C.MODEL_PATH = ""
 
 _C.WANDB = CN()
@@ -22,14 +22,14 @@ _C.WANDB.MODE = "offline"
 # Data settings
 # -----------------------------------------------------------------------------
 _C.DATASET = CN()
-_C.DATASET.TRAIN_IMAGE_PATH = "/ai/data/data/vessel/DIAS/DSA/data/training/images"
-_C.DATASET.TRAIN_LABEL_PATH = "/ai/data/data/vessel/DIAS/DSA/data/training/labels"
-_C.DATASET.VAL_IMAGE_PATH = "/ai/data/data/vessel/DIAS/DSA/data/validation/images"
-_C.DATASET.VAL_LABEL_PATH = "/ai/data/data/vessel/DIAS/DSA/data/validation/labels"
-_C.DATASET.TEST_IMAGE_PATH = "/ai/data/data/vessel/DIAS/DSA/data/test/images"
-_C.DATASET.TEST_LABEL_PATH = "/ai/data/data/vessel/DIAS/DSA/data/test/labels"
+_C.DATASET.TRAIN_IMAGE_PATH = "/mnt/d/data/DIAS/training/images_npy/step4"
+_C.DATASET.TRAIN_LABEL_PATH = "/mnt/d/data/DIAS/training/labels"
+_C.DATASET.VAL_IMAGE_PATH = "/mnt/d/data/DIAS/validation/images_npy/step4"
+_C.DATASET.VAL_LABEL_PATH = "/mnt/d/data/DIAS/validation/labels"
+_C.DATASET.TEST_IMAGE_PATH = "/mnt/d/data/DIAS/test/images_npy/step4"
+_C.DATASET.TEST_LABEL_PATH = "/mnt/d/data/DIAS/test/labels"
 _C.DATASET.STRIDE = 32
-_C.DATASET.PATCH_SIZE = (64, 64)
+_C.DATASET.PATCH_SIZE = (96, 96)
 _C.DATASET.NUM_EACH_EPOCH = 20000
 _C.DATASET.WITH_VAL = True
 
@@ -151,3 +151,9 @@ def get_val_config(args=None):
     update_val_config(config, args)
 
     return config
+
+def save_config(config, checkpoint_dir):
+    config_file = os.path.join(checkpoint_dir, 'config.yaml')
+    with open(config_file, 'w') as f:
+        f.write(config.dump())
+    return config_file

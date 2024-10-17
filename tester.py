@@ -89,10 +89,10 @@ class Tester(Trainer):
 
         formatted_data = [f"{mean}$\pm${std}" for mean, std in zip(mean_data, std_data)]
 
-        # 创建一个字典，用于构造DataFrame
+        # Create a dictionary for constructing DataFrame
         data_dict = {col: [val] for col, val in zip(columns, formatted_data)}
 
-        # 创建DataFrame
+        # Create DataFrame
         df = pd.DataFrame(data_dict)
         # df = pd.DataFrame(data=np.array(data).reshape(1, len(columns)), index=[self.model_name], columns = columns)
        

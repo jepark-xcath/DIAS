@@ -2,44 +2,49 @@ import cv2
 import os
 import numpy as np
 
-# 定义文件夹路径
-folder_path = "/ai/data/data/vessel/DIAS/test/images"
+# Define the folder path
+dataset = 'test'
+folder_path = f"/mnt/d/data/DIAS/{dataset}/images"
 
-# 获取文件夹中的所有文件
+# Get all files in the folder
 files = os.listdir(folder_path)
-
-# 创建一个字典来存储每个序列ID的图像列表
+# Create a dictionary to store the image list for each sequence ID
 sequence_images = {}
 
-# 遍历文件夹中的每个文件
+# Iterate through each file in the folder
 for file in files:
-    # 分割文件名以获取序列ID和图像ID
+    if file.endswith(".db"):
+        continue
+    # Split the file name to get the sequence ID and image ID
     sequence_id = file.split("_")[1]
+    print(sequence_id)
 
-    # 读取图像
+    # Read the image
     image = cv2.imread(os.path.join(folder_path, file), cv2.IMREAD_GRAYSCALE)
 
-    # 如果序列ID不在字典中，则将其添加
+    # If the sequence ID is not in the dictionary, add it
     if sequence_id not in sequence_images:
         sequence_images[sequence_id] = [image]
     else:
         sequence_images[sequence_id].append(image)
 
-# 创建一个新的文件夹来保存合并的图像
-output_folder = "test_mip"
+# Create a new folder to save the merged images
+output_folder = f"/mnt/d/data/DIAS/{dataset}/mip_npy"
 os.makedirs(output_folder, exist_ok=True)
 
-# 合并每个序列ID的图像并实现最大密度投影
+# Merge the images for each sequence ID and perform maximum intensity projection
 for sequence_id, images in sequence_images.items():
-    # 将图像堆叠在一起
+    # Stack the images together
     stacked_images = np.stack(images, axis=0)
 
-    # 计算最大密度投影
+    # Compute the maximum intensity projection
     max_density_projection = np.min(stacked_images, axis=0)
     # max_density_projection = np.where(max_density_projection > 100,255,0)
 
-    # 保存最大密度投影图像
-    output_file = os.path.join(output_folder, f"{sequence_id}.jpg")
-    cv2.imwrite(output_file, max_density_projection)
+    # Save the maximum intensity projection image
+    # output_file = os.path.join(output_folder, f"{sequence_id}.jpg")
+    # cv2.imwrite(output_file, max_density_projection)
+    output_file = os.path.join(output_folder, f"image_{sequence_id}.npy")
+    np.save(output_file, max_density_projection)
 
-print("合并和保存完成。")
+print("Merging and saving completed.")

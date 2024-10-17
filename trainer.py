@@ -6,6 +6,7 @@ from loguru import logger
 from tqdm import tqdm
 from utils.helpers import to_cuda
 from utils.metrics import AverageMeter, get_metrics, get_metrics
+from configs.config import save_config
 import wandb
 import torch.distributed as dist
 
@@ -14,7 +15,7 @@ class Trainer:
     def __init__(self, config, train_loader, val_loader, model, is_2d, loss, optimizer, lr_scheduler):
         self.config = config
 
-        self.scaler = torch.cuda.amp.GradScaler(enabled=True)
+        self.scaler = torch.amp.GradScaler(enabled=True) #torch.cuda.amp.GradScaler(enabled=True)
         self.loss = loss
         self.model = model
         self.is_2d = is_2d
@@ -26,15 +27,14 @@ class Trainer:
         if self._get_rank() == 0:
             self.checkpoint_dir = os.path.join(
                 config.SAVE_DIR, config.EXPERIMENT_ID)
-
             os.makedirs(self.checkpoint_dir)
+            save_config(config, self.checkpoint_dir)
           # MONITORING
         self.improved = True
         self.not_improved_count = 0
         self.mnt_best = -math.inf if self.config.TRAIN.MNT_MODE == 'max' else math.inf
 
     def train(self):
-
         for epoch in range(1, self.config.TRAIN.EPOCHS+1):
 
             if self.config.DIS:
@@ -91,7 +91,7 @@ class Trainer:
             if not self.is_2d:
                 img = img.unsqueeze(1)
             self.optimizer.zero_grad()
-            with torch.cuda.amp.autocast(enabled=self.config.AMP):
+            with torch.amp.autocast(device_type='cuda', enabled=self.config.AMP): #torch.cuda.amp.autocast(enabled=self.config.AMP):
                 pre = self.model(img)
                 loss = self.loss(pre, gt)
             if self.config.AMP:
@@ -101,7 +101,6 @@ class Trainer:
                 self.scaler.step(self.optimizer)
                 self.scaler.update()
             else:
-
                 loss.backward()
                 if self.config.TRAIN.DO_BACKPROP:
                     torch.nn.utils.clip_grad_norm_(self.model.parameters(), 12)
@@ -135,8 +134,7 @@ class Trainer:
                 gt = to_cuda(gt)
                 if not self.is_2d:
                     img = img.unsqueeze(1)
-                with torch.cuda.amp.autocast(enabled=self.config.AMP):
-
+                with torch.amp.autocast(device_type='cuda', enabled=self.config.AMP): #torch.cuda.amp.autocast(enabled=self.config.AMP):
                     predict = self.model(img)
                     loss = self.loss(predict, gt)
 
@@ -148,7 +146,6 @@ class Trainer:
                     epoch, self.total_loss.mean, *self._get_metrics_mean().values()))
 
         if self._get_rank() == 0:
-
             wandb.log({f'{wrt_mode}/loss': self.total_loss.mean}, step=epoch)
             for k, v in list(self._get_metrics_mean().items())[:-1]:
                 wandb.log({f'{wrt_mode}/{k}': v}, step=epoch)
@@ -210,9 +207,7 @@ class Trainer:
         self.cldice.update(cldice)
 
     def _get_metrics_mean(self):
-
-        return {
-            
+        return {            
             "DSC": self.DSC.mean,
             "Acc": self.acc.mean,
             "Sen": self.sen.mean,
@@ -221,10 +216,9 @@ class Trainer:
             "AUC": self.auc.mean,
             "cldice": self.cldice.mean,
         }
-    def _get_metrics_std(self):
 
-        return {
-            
+    def _get_metrics_std(self):
+        return {            
             "DSC": self.DSC.std,
             "Acc": self.acc.std,
             "Sen": self.sen.std,

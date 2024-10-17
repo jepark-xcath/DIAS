@@ -39,12 +39,16 @@ class Train_dataset(Dataset):
         id = np.random.randint(len(self.image_list))
         img_id = self.image_list[id]
         img =  np.load(os.path.join(self.images_path,img_id))
+        if img.ndim == 2:
+            img = img[np.newaxis]
         gt = cv2.imread(os.path.join(
-                self.labels_path, f"label_s{img_id.split('.')[0]}.png"), 0)
+                self.labels_path, f"label_{img_id.split('_')[1].split('.')[0]}.png"), 0)
         gt = np.array(gt/255)[np.newaxis]
         # gt = np.load(os.path.join(self.labels_path,img_id))[np.newaxis]
+        # print('dataset @46', img.shape, gt.shape)
         img = self.seq_DA(img)
         gt = self.gt_DA(gt)
+        # print('dataset @48', img.shape, gt.shape)
         return img, gt.long()
 
     def __len__(self):
@@ -64,17 +68,19 @@ class Test_dataset(Train_dataset):
         self.gt_patch = self.get_patch(
             self.gt_list, self.patch_size, self.stride)
     def read_image(self, images_path, label_path):
-        label_files = list(sorted(os.listdir(label_path)))
+        image_files = list(sorted(os.listdir(images_path)))
+        # print('dataset @68 ', len(image_files), label_path, image_files)
         images = []
         gts = []
-        for i in range(len(label_files)):
+        for image_id in image_files:               
+            img = np.load(os.path.join(images_path,image_id))
+            if img.ndim == 2:
+                img = img[np.newaxis]
+            images.append(img)            
             
-            image = np.load(os.path.join(images_path,f"{i}.npy"))
-            images.append(image)
-            
-  
+            image_id = image_id.split('s')[-1].split('_')[0].split('.')[0]
             gt = cv2.imread(os.path.join(
-                self.labels_path, f"label_s{i}.png"), 0)
+                self.labels_path, f"label_s{image_id}.png"), 0)
             gt = np.array(gt/255)[np.newaxis]
             # gt = np.load(os.path.join(self.labels_path,f"{i}.npy"))[np.newaxis]
             gts.append(gt)
@@ -98,9 +104,9 @@ class Test_dataset(Train_dataset):
         return patch_list
 
     def __getitem__(self, idx):
-
         img = self.img_patch[idx]
         gt = self.gt_patch[idx]
+        # print('dataset @104', img.shape, gt.shape)
         return img, gt.long()
 
     def __len__(self):
