@@ -132,9 +132,6 @@ class Test_dataset(Train_dataset):
             if not os.path.isfile(file_path):
                 continue
             img = np.load(file_path)
-            img = (img - np.mean(img)) / np.std(img)
-            # img = ((img + 1) / 2)
-            img = (img - np.min(img))*255 / (np.max(img) - np.min(img))
             
             if img.ndim == 2:
                 img = img[np.newaxis]
