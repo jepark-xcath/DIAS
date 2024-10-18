@@ -101,6 +101,7 @@ class UNet_3D(nn.Module):
         self.outc = OutConv(64, num_classes)
 
     def forward(self, x):
+        print('unet_3d @104', x.shape)
         x1 = self.inc(x)
         x2 = self.down1(x1)
         x3 = self.down2(x2)

@@ -19,7 +19,7 @@ class Tester(Trainer):
         self.model = model
         self.is_2d = is_2d
         self.model_name = model_name
-        self.save_path = "save_results/" + save_dir
+        self.save_path = os.path.join(config.INFERENCE_RESULT_PATH, config.MODEL_PATH.split('/')[-1])
         self.labels_path = config.DATASET.TEST_LABEL_PATH
         self.patch_size = config.DATASET.PATCH_SIZE
         self.stride = config.DATASET.STRIDE
@@ -28,24 +28,25 @@ class Tester(Trainer):
         
         cudnn.benchmark = True
 
+        self.has_labels = True if self.labels_path is not None else False
+
     def test(self):
         
         self.model.eval()
         self._reset_metrics()
         self.VC=AverageMeter()
-        gts = self.get_labels()
+        # gts = self.get_labels()
         tbar = tqdm(self.test_loader, ncols=150)
 
         pres = []
         with torch.no_grad():
             
-            for img, _ in tbar:
+            for img in tbar:
                
                 img = to_cuda(img)
                 if not self.is_2d:
                     img = img.unsqueeze(1)
-                with torch.cuda.amp.autocast(enabled=self.config.AMP):
-                # with torch.cuda.amp.autocast(enabled=False):
+                with torch.amp.autocast('cuda',enabled=self.config.AMP):
                     pre = self.model(img)
             
                
@@ -56,8 +57,15 @@ class Tester(Trainer):
 
         pres = torch.stack(pres, 0).cpu()
 
-        H,W = gts[0].shape
-        num_data = len(gts)
+        # Recover the original image shape using either GT labels or the Test_dataset
+        if self.has_labels:
+            gts = self.get_labels()
+            H, W = gts[0].shape
+            num_data = len(gts)
+        else:
+            H, W = self.test_loader.img_list[0].shape[1:]  # Recover shape from the dataset
+            num_data = len(self.test_loader.img_list)
+
         pad_h = self.stride - (H - self.patch_size[0]) % self.stride
         pad_w = self.stride - (W - self.patch_size[1]) % self.stride
         new_h = H + pad_h
@@ -66,19 +74,30 @@ class Tester(Trainer):
         predict = pres[:,0,0:H,0:W]
         predict_b = np.where(predict >= 0.5, 1, 0)
 
-        for j in range(num_data):
-            
-            cv2.imwrite(self.save_path + f"/gt{j}.png", np.uint8(gts[j]*255))
-            cv2.imwrite(self.save_path + f"/pre{j}.png", np.uint8(predict[j]*255))
-            cv2.imwrite(self.save_path + f"/pre_b{j}.png", np.uint8(predict_b[j]*255))
-            cv2.imwrite(self.save_path + f"/color_b{j}.png", get_color(predict_b[j],gts[j]))
-            self._update_metrics(*get_metrics(predict[j], gts[j],run_clDice= True).values())
-            self.VC.update(count_connect_component(predict_b[j], gts[j]))
+        # If labels are available, compute metrics and save results
+        if self.has_labels:
+            for j in range(num_data):
+                self._save_predictions(j, gts[j], predict[j], predict_b[j])
+                self._update_metrics(*get_metrics(predict[j], gts[j], run_clDice=True).values())
+                self.VC.update(count_connect_component(predict_b[j], gts[j]))
 
-        
-                
-            # tic = time.time()    
+            self._log_metrics()
+        else:
+            # Save predictions only (no ground truth available)
+            for j in range(num_data):
+                self._save_predictions(j, None, predict[j], predict_b[j])
 
+    def _save_predictions(self, index, gt, predict, predict_b):
+        """Save predictions and optional GT as images."""
+        if gt is not None:
+            cv2.imwrite(self.save_path + f"/gt{index}.png", np.uint8(gt * 255))
+        cv2.imwrite(self.save_path + f"/pre{index}.png", np.uint8(predict * 255))
+        cv2.imwrite(self.save_path + f"/pre_b{index}.png", np.uint8(predict_b * 255))
+        if gt is not None:
+            cv2.imwrite(self.save_path + f"/color_b{index}.png", get_color(predict_b, gt))
+
+    def _log_metrics(self):
+        """Log the evaluation metrics."""
         mean_data = list(self._get_metrics_mean().values())
         std_data = list(self._get_metrics_std().values())
         mean_data.append(self.VC.mean)
@@ -86,46 +105,30 @@ class Tester(Trainer):
         columns = list(self._get_metrics_mean().keys())
         columns.append("VC")
 
-
         formatted_data = [f"{mean}$\pm${std}" for mean, std in zip(mean_data, std_data)]
 
-        # Create a dictionary for constructing DataFrame
+        # Create a DataFrame and save to CSV
         data_dict = {col: [val] for col, val in zip(columns, formatted_data)}
-
-        # Create DataFrame
         df = pd.DataFrame(data_dict)
-        # df = pd.DataFrame(data=np.array(data).reshape(1, len(columns)), index=[self.model_name], columns = columns)
-       
-        # logger.info(f"###### TEST EVALUATION ######")
-        # logger.info(f'test time:  {self.batch_time.average}')
-        # logger.info(f'     VC:  {self.VC.average}')
-  
-        
+        df.to_csv(join(self.save_path, f"{self.model_name}_result.csv"))
 
-        df.to_csv(join(self.save_path, f"{self.model_name}_result.cvs"))
+        # Log metrics to console
         for k, v in self._get_metrics_mean().items():
             logger.info(f'{str(k):5s}: {v}')
-
         for k, v in self._get_metrics_std().items():
             logger.info(f'{str(k):5s}: {v}')
-        
+
         logger.info(f'VC_mean: {self.VC.mean}')
-       
         logger.info(f'VC_std: {self.VC.std}')
-     
-            
 
     def get_labels(self):
+        """Load ground truth labels."""
         labels = subfiles(self.labels_path, join=False, suffix='png')
         label_list = []
         for i in range(len(labels)):
             gt = cv2.imread(os.path.join(self.labels_path, f'label_s{i}.png'), 0)
-            gt = np.array(gt/255)
+            gt = np.array(gt / 255)
             label_list.append(gt)
         return label_list
-    
-
-
-
    
         
