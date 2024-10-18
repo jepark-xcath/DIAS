@@ -32,7 +32,7 @@ def to_cuda(data, non_blocking=True):
 def load_checkpoint(checkpoint_path, is_best=True):
     checkpoint_file = "best_model.pth" if is_best else "final_checkpoint.pth"
     checkpoint = torch.load(
-        join(checkpoint_path, checkpoint_file), map_location=torch.device('cpu'))
+        join(checkpoint_path, checkpoint_file), map_location=torch.device('cpu'), weights_only=False)
     return checkpoint
 
 

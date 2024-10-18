@@ -56,5 +56,5 @@ def build_test_loader(config):
         drop_last=False
     )
     test_loader.img_list = test_dataset.img_list
-
+    test_loader.image_files = test_dataset.image_files
     return test_loader

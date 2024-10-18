@@ -61,10 +61,10 @@ class Tester(Trainer):
         if self.has_labels:
             gts = self.get_labels()
             H, W = gts[0].shape
-            num_data = len(gts)
+            image_id = range(len(gts))
         else:
             H, W = self.test_loader.img_list[0].shape[1:]  # Recover shape from the dataset
-            num_data = len(self.test_loader.img_list)
+            image_id = self.test_loader.image_files
 
         pad_h = self.stride - (H - self.patch_size[0]) % self.stride
         pad_w = self.stride - (W - self.patch_size[1]) % self.stride
@@ -76,7 +76,7 @@ class Tester(Trainer):
 
         # If labels are available, compute metrics and save results
         if self.has_labels:
-            for j in range(num_data):
+            for j in range(image_id):
                 self._save_predictions(j, gts[j], predict[j], predict_b[j])
                 self._update_metrics(*get_metrics(predict[j], gts[j], run_clDice=True).values())
                 self.VC.update(count_connect_component(predict_b[j], gts[j]))

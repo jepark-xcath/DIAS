@@ -136,9 +136,11 @@ class Test_dataset(Train_dataset):
             if img.ndim == 2:
                 img = img[np.newaxis]
             if img.shape[0] > 4: 
+                # Remain 4 frames in the middle to fit the model input size. 
+                # It can be changed according to the model input size or training strategy.
                 frames = img.shape[0]
                 gap = (frames-4)//2
-                img = img[gap:gap+4]
+                img = img[gap:gap+4] 
             images.append(img)    
         return images
 
