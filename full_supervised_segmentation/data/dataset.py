@@ -137,7 +137,7 @@ class Test_dataset(Train_dataset):
                 img = img[np.newaxis]
             if img.shape[0] > 4: 
                 frames = img.shape[0]
-                gap = np.around(frames-4)-1
+                gap = (frames-4)//2
                 img = img[gap:gap+4]
             images.append(img)    
         return images
