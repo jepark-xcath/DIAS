@@ -32,13 +32,13 @@ model_2d = {
 def build_model(config):
     if config.MODEL.TYPE in model_2d:
         return getattr(models, config.MODEL.TYPE)(
-            num_classes=2,
-            num_channels=4
+            num_classes=config.MODEL.NUM_CLASSES,
+            num_channels=config.MODEL.NUM_CHANNELS
         ), True
     else:
         return getattr(models, config.MODEL.TYPE)(
-            num_classes=2,
-            num_channels=1
+            num_classes=config.MODEL.NUM_CLASSES,
+            num_channels=config.MODEL.NUM_CHANNELS
         ), False
     
 
@@ -47,18 +47,13 @@ def build_model(config):
 def build_wsl_model(config):
     if config.MODEL.TYPE in model_2d:
         return getattr(models, config.MODEL.TYPE)(
-            num_classes=3,
-            num_channels=8
+            num_classes=config.MODEL.NUM_CLASSES,
+            num_channels=config.MODEL.NUM_CHANNELS
         ), True
-    elif config.MODEL.TYPE == "UNet_CCT":
-        return getattr(models, config.MODEL.TYPE)(
-                num_classes=2,
-                num_channels=8
-            ), True
     else:
         return getattr(models, config.MODEL.TYPE)(
-            num_classes=3,
-            num_channels=1
+            num_classes=config.MODEL.NUM_CLASSES,
+            num_channels=config.MODEL.NUM_CHANNELS
         ), False
 
 

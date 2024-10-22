@@ -82,7 +82,7 @@ class Valid_dataset(Train_dataset):
             image_id = image_id.split('s')[-1].split('_')[0].split('.')[0]            
             gt = cv2.imread(os.path.join(
                 self.labels_path, f"label_s{image_id}.png"), 0)
-            print('dataset @84', image_id, gt.shape)
+            # print('dataset @84', image_id, gt.shape)
             gt = np.array(gt/255)[np.newaxis]
             # gt = np.load(os.path.join(self.labels_path,f"{i}.npy"))[np.newaxis]
             gts.append(gt)

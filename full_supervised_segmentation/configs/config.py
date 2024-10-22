@@ -23,13 +23,13 @@ _C.WANDB.MODE = "offline"
 # Data settings
 # -----------------------------------------------------------------------------
 _C.DATASET = CN()
-_C.DATASET.TRAIN_IMAGE_PATH = "/mnt/d/data/DIAS/training/images_npy/step4"
+_C.DATASET.TRAIN_IMAGE_PATH = "/mnt/d/data/DIAS/training/aip_npy"
 _C.DATASET.TRAIN_LABEL_PATH = "/mnt/d/data/DIAS/training/labels"
-_C.DATASET.VAL_IMAGE_PATH = "/mnt/d/data/DIAS/validation/images_npy/step4"
+_C.DATASET.VAL_IMAGE_PATH = "/mnt/d/data/DIAS/validation/aip_npy"
 _C.DATASET.VAL_LABEL_PATH = "/mnt/d/data/DIAS/validation/labels"
-# _C.DATASET.TEST_IMAGE_PATH = "/mnt/d/data/DIAS/test/images_npy"
+# _C.DATASET.TEST_IMAGE_PATH = "/mnt/d/data/DIAS/test/aip_npy"
 # _C.DATASET.TEST_LABEL_PATH = "/mnt/d/data/DIAS/test/labels"
-_C.DATASET.TEST_IMAGE_PATH = "/mnt/d/data/aiminer-neuroangio-june17-2024-all/preprocessed_dias/Cerebral_DERIVED_S/images_npy"
+_C.DATASET.TEST_IMAGE_PATH = "/mnt/d/data/aiminer-neuroangio-june17-2024-all/preprocessed_dias/Cerebral_DERIVED_S/images_npy/step1"
 _C.DATASET.TEST_LABEL_PATH = None
 _C.DATASET.STRIDE = 32
 _C.DATASET.PATCH_SIZE = (96, 96)
@@ -46,6 +46,8 @@ _C.DATALOADER.NUM_WORKERS = 8
 # -----------------------------------------------------------------------------
 _C.MODEL = CN()
 _C.MODEL.TYPE = "FR_UNet"
+_C.MODEL.NUM_CHANNELS = 1   # input channels 
+_C.MODEL.NUM_CLASSES = 4    # output classes
 
 _C.TRAIN = CN()
 _C.TRAIN.DO_BACKPROP = False

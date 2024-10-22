@@ -1,4 +1,5 @@
 import time
+import shutil
 import cv2
 import torch
 import numpy as np
@@ -8,6 +9,7 @@ from tqdm import tqdm
 from trainer import Trainer
 from utils.helpers import dir_exists, remove_files,to_cuda,recompone_overlap
 from utils.metrics import get_metrics, get_metrics, count_connect_component,get_color,AverageMeter
+from configs.config import save_config
 from batchgenerators.utilities.file_and_folder_operations import *
 import pandas as pd
 
@@ -19,12 +21,16 @@ class Tester(Trainer):
         self.model = model
         self.is_2d = is_2d
         self.model_name = model_name
-        self.save_path = os.path.join(config.INFERENCE_RESULT_PATH, config.MODEL_PATH.split('/')[-1])
+        name = config.MODEL_PATH.split('/')[-1] if not config.MODEL_PATH.endswith('/') else config.MODEL_PATH.split('/')[-2]
+        self.save_path = os.path.join(config.INFERENCE_RESULT_PATH, name)
         self.labels_path = config.DATASET.TEST_LABEL_PATH
         self.patch_size = config.DATASET.PATCH_SIZE
         self.stride = config.DATASET.STRIDE
         dir_exists(self.save_path)
         remove_files(self.save_path)
+        shutil.copyfile(
+            os.path.join(config.MODEL_PATH, 'config.yaml'),
+            os.path.join(self.save_path, 'config.yaml'))
         
         cudnn.benchmark = True
 
@@ -76,7 +82,7 @@ class Tester(Trainer):
 
         # If labels are available, compute metrics and save results
         if self.has_labels:
-            for j in range(image_id):
+            for j, id_ in enumerate(image_id):
                 self._save_predictions(j, gts[j], predict[j], predict_b[j])
                 self._update_metrics(*get_metrics(predict[j], gts[j], run_clDice=True).values())
                 self.VC.update(count_connect_component(predict_b[j], gts[j]))
@@ -84,16 +90,15 @@ class Tester(Trainer):
             self._log_metrics()
         else:
             # Save predictions only (no ground truth available)
-            for j in range(num_data):
-                self._save_predictions(j, None, predict[j], predict_b[j])
+            for j, id_ in enumerate(image_id):
+                self._save_predictions(id_, None, predict[j], predict_b[j])
 
     def _save_predictions(self, index, gt, predict, predict_b):
-        """Save predictions and optional GT as images."""
-        if gt is not None:
-            cv2.imwrite(self.save_path + f"/gt{index}.png", np.uint8(gt * 255))
-        cv2.imwrite(self.save_path + f"/pre{index}.png", np.uint8(predict * 255))
+        """Save predictions and optional GT as images."""            
+        cv2.imwrite(self.save_path + f"/pre_{index}.png", np.uint8(predict * 255))
         cv2.imwrite(self.save_path + f"/pre_b{index}.png", np.uint8(predict_b * 255))
         if gt is not None:
+            cv2.imwrite(self.save_path + f"/gt_{index}.png", np.uint8(gt * 255))
             cv2.imwrite(self.save_path + f"/color_b{index}.png", get_color(predict_b, gt))
 
     def _log_metrics(self):
