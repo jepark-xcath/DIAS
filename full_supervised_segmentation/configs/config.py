@@ -47,7 +47,7 @@ _C.DATALOADER.NUM_WORKERS = 8
 _C.MODEL = CN()
 _C.MODEL.TYPE = "FR_UNet"
 _C.MODEL.NUM_CHANNELS = 1   # input channels 
-_C.MODEL.NUM_CLASSES = 4    # output classes
+_C.MODEL.NUM_CLASSES = 2    # output classes
 
 _C.TRAIN = CN()
 _C.TRAIN.DO_BACKPROP = False

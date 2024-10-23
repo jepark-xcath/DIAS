@@ -4,9 +4,10 @@ import numpy as np
 from batchgenerators.utilities.file_and_folder_operations import *
 import torch
 from torch.utils.data import Dataset
-from utils.data_augmentation import Compose, ToTensor, CropToFixed, HorizontalFlip, VerticalFlip, RandomRotate90
 import cv2
 import torch.nn.functional as F
+
+from utils.data_augmentation import Compose, ToTensor, RandZoom, CropToFixed, HorizontalFlip, VerticalFlip, RandomRotate90
 
 
 class Train_dataset(Dataset):
@@ -20,6 +21,7 @@ class Train_dataset(Dataset):
         seed = np.random.randint(123)
 
         self.seq_DA = Compose([
+            RandZoom(np.random.RandomState(seed), (0.75, 1.25)),
             CropToFixed(np.random.RandomState(seed), size=self.size),
             HorizontalFlip(np.random.RandomState(seed)),
             VerticalFlip(np.random.RandomState(seed)),
@@ -28,6 +30,7 @@ class Train_dataset(Dataset):
         ])
 
         self.gt_DA = Compose([
+            RandZoom(np.random.RandomState(seed), (0.75, 1.25)),
             CropToFixed(np.random.RandomState(seed), size=self.size),
             HorizontalFlip(np.random.RandomState(seed)),
             VerticalFlip(np.random.RandomState(seed)),
@@ -70,7 +73,7 @@ class Valid_dataset(Train_dataset):
 
     def read_image(self, images_path, label_path):
         image_files = list(sorted(os.listdir(images_path)))
-        print('dataset @72 ', len(image_files), label_path, image_files)
+        # print('dataset @72 ', len(image_files), label_path, image_files)
         images = []
         gts = []
         for image_id in image_files:               
@@ -120,7 +123,7 @@ class Test_dataset(Train_dataset):
         self.images_path = images_path
         self.patch_size = config.DATASET.PATCH_SIZE
         self.stride = config.DATASET.STRIDE
-        self.image_files = list(sorted(os.listdir(images_path)))[:10]
+        self.image_files = list(sorted(os.listdir(images_path)))[80:100]
         self.img_list = self.read_image(self.image_files)
         self.img_patch = self.get_patch(
             self.img_list, self.patch_size, self.stride)

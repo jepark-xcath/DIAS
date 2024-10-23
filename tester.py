@@ -9,6 +9,7 @@ from tqdm import tqdm
 from trainer import Trainer
 from utils.helpers import dir_exists, remove_files,to_cuda,recompone_overlap
 from utils.metrics import get_metrics, get_metrics, count_connect_component,get_color,AverageMeter
+from utils.postprocessing import *
 from configs.config import save_config
 from batchgenerators.utilities.file_and_folder_operations import *
 import pandas as pd
@@ -78,7 +79,7 @@ class Tester(Trainer):
         new_w = W + pad_w
         pres = recompone_overlap(np.expand_dims(pres.cpu().detach().numpy(),axis=1), new_h, new_w, self.stride, self.stride)  # predictions
         predict = pres[:,0,0:H,0:W]
-        predict_b = np.where(predict >= 0.5, 1, 0)
+        predict_b = np.where(predict >= 0.4, 1, 0)
 
         # If labels are available, compute metrics and save results
         if self.has_labels:
@@ -94,9 +95,12 @@ class Tester(Trainer):
                 self._save_predictions(id_, None, predict[j], predict_b[j])
 
     def _save_predictions(self, index, gt, predict, predict_b):
-        """Save predictions and optional GT as images."""            
+        """Save predictions and optional GT as images."""
+        # Postprocessing 
+        predict_b = get_connect_components(predict_b, min_size=1024)
+
         cv2.imwrite(self.save_path + f"/pre_{index}.png", np.uint8(predict * 255))
-        cv2.imwrite(self.save_path + f"/pre_b{index}.png", np.uint8(predict_b * 255))
+        cv2.imwrite(self.save_path + f"/pre_b{index}.png", predict_b)
         if gt is not None:
             cv2.imwrite(self.save_path + f"/gt_{index}.png", np.uint8(gt * 255))
             cv2.imwrite(self.save_path + f"/color_b{index}.png", get_color(predict_b, gt))
