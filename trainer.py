@@ -47,7 +47,7 @@ class Trainer:
                     logger.info(f'## Info for epoch {epoch} ## ')
                     for k, v in results.items():
                         logger.info(f'{str(k):15s}: {v}')
-                    if self.config.TRAIN.MNT_MODE != 'off' and epoch >= 10:
+                    if self.config.TRAIN.MNT_MODE != 'off' :
                         try:
                             if self.config.TRAIN.MNT_MODE == 'min':
                                 self.improved = (

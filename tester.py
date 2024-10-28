@@ -97,6 +97,7 @@ class Tester(Trainer):
     def _save_predictions(self, index, gt, predict, predict_b):
         """Save predictions and optional GT as images."""
         # Postprocessing 
+        # predict_b = remove_small_vessles(predict_b)
         predict_b = get_connect_components(predict_b, min_size=1024)
 
         cv2.imwrite(self.save_path + f"/pre_{index}.png", np.uint8(predict * 255))

@@ -10,7 +10,7 @@ def save_image(data, save_path):
 	print(f"Saved image to {save_path}")
 
 if __name__ == '__main__':
-	data_type = 'Cerebral_DERIVED_S'
+	data_type = 'Cerebral_ORIGINAL_S' #'Cerebral_DERIVED_S'
 	data_list_path = f'/home/jepark/codes/Algorithms_Vessel_2D/Dataset/{data_type}.json'
 	with open(data_list_path, 'r') as f:
 		data_list = json.load(f)

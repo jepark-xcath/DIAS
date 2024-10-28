@@ -59,3 +59,26 @@ def get_connect_components(data, min_size=None):
         # Ensure the background remains black
         data[colored_data == 0] = [0, 0, 0]
     return data
+
+def remove_small_vessles(
+    blood_vessel_image: np.array, min_width: int = 1
+) -> np.array:
+    """
+    Remove small vessels from a binary blood vessel image.
+    Args:
+        blood_vessel_image (np.array): Binary blood vessel image.
+        min_width (int): Minimum width of small vessels to remove.
+    Returns:
+        np.array: Binary blood vessel image with small vessels removed.
+    """
+    # Use distance transform to determine the distance of each pixel to the nearest background pixel
+    dist_transform = cv2.distanceTransform(blood_vessel_image.astype(np.uint8), cv2.DIST_L2, 3).astype(np.uint8)
+    # Determine the regions of small vessels based on the distance transform results
+    small_vessels = (dist_transform < min_width).astype(np.uint8)
+    # Remove small vessels from the original image
+    removed_small_vessels = cv2.subtract(blood_vessel_image, small_vessels)
+    return removed_small_vessels
+    # # Perform morphological operations to remove small vessels
+    # kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (min_width * 2 + 1, min_width * 2 + 1))
+    # removed_small_vessels = cv2.morphologyEx(blood_vessel_image, cv2.MORPH_OPEN,kernel)
+    # return removed_small_vessels

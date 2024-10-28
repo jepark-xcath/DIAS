@@ -29,10 +29,10 @@ _C.DATASET.VAL_IMAGE_PATH = "/mnt/d/data/DIAS/validation/aip_npy"
 _C.DATASET.VAL_LABEL_PATH = "/mnt/d/data/DIAS/validation/labels"
 # _C.DATASET.TEST_IMAGE_PATH = "/mnt/d/data/DIAS/test/aip_npy"
 # _C.DATASET.TEST_LABEL_PATH = "/mnt/d/data/DIAS/test/labels"
-_C.DATASET.TEST_IMAGE_PATH = "/mnt/d/data/aiminer-neuroangio-june17-2024-all/preprocessed_dias/Cerebral_DERIVED_S/images_npy/step1"
+_C.DATASET.TEST_IMAGE_PATH = "/mnt/d/data/aiminer-neuroangio-june17-2024-all/preprocessed_dias/Cerebral_ORIGINAL_S/images_npy/step1"
 _C.DATASET.TEST_LABEL_PATH = None
 _C.DATASET.STRIDE = 32
-_C.DATASET.PATCH_SIZE = (96, 96)
+_C.DATASET.PATCH_SIZE = (128, 128)
 _C.DATASET.NUM_EACH_EPOCH = 20000
 _C.DATASET.WITH_VAL = True
 

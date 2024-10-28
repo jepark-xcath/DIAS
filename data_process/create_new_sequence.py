@@ -2,9 +2,9 @@ import os
 import numpy as np
 
 if __name__ == '__main__':
-	dataset = 'test'
+	dataset = 'Cerebral_ORIGINAL_S' #'test'
 	# image_path = f'/mnt/d/data/DIAS/{dataset}/images_npy'
-	image_path = '/mnt/d/data/aiminer-neuroangio-june17-2024-all/preprocessed_dias/Cerebral_DERIVED_S/images_npy'
+	image_path = f'/mnt/d/data/aiminer-neuroangio-june17-2024-all/preprocessed_dias/{dataset}/images_npy'
 	image_list = os.listdir(image_path)
 
 	step = 1
