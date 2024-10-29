@@ -26,14 +26,17 @@ class RandZoom:
     """
     Randomly zooms the image in or out by a factor of 1 +/- zoom_range.
     """
-    def __init__(self, random_state, zoom_range=(0.9, 1.1), **kwargs):
+    def __init__(self, random_state, zoom_range=(0.9, 1.1), name='', **kwargs):
         self.random_state = random_state
         self.zoom_range = zoom_range
+        self.name = name
     
     def __call__(self, m):
         assert m.ndim == 3, 'Supports only 2D+time (SxHxW) images and 2D (HxW) gt'
-        zoom_factor = self.random_state.uniform(self.zoom_range[0], self.zoom_range[1])
-        m = zoom(m, zoom_factor, order=0)
+        rndState = self.random_state.uniform()
+        if  rndState>= self.zoom_range[0] and rndState <= self.zoom_range[1]:
+            zoom_factor = rndState
+            m = zoom(m, zoom_factor, order=0)
         return m
 
 class HorizontalFlip:

@@ -22,7 +22,7 @@ class Train_dataset(Dataset):
         seed = np.random.randint(123)
 
         self.seq_DA = Compose([
-            RandZoom(np.random.RandomState(seed), (0.75, 1.25)),
+            RandZoom(np.random.RandomState(seed), (0.75, 1.25), name='seq'),
             CropToFixed(np.random.RandomState(seed), size=self.size),
             HorizontalFlip(np.random.RandomState(seed)),
             VerticalFlip(np.random.RandomState(seed)),
@@ -31,7 +31,7 @@ class Train_dataset(Dataset):
         ])
 
         self.gt_DA = Compose([
-            RandZoom(np.random.RandomState(seed), (0.75, 1.25)),
+            RandZoom(np.random.RandomState(seed), (0.75, 1.25), name='gt'),
             CropToFixed(np.random.RandomState(seed), size=self.size),
             HorizontalFlip(np.random.RandomState(seed)),
             VerticalFlip(np.random.RandomState(seed)),
