@@ -29,7 +29,7 @@ def to_one_hot(seg, all_seg_labels=None):
     return result
 
 
-def get_metrics(predict, target,run_clDice = False, threshold=0.5):
+def get_metrics(predict, target,run_clDice = False, threshold=0.5, eps=1e-7):
 
     
     predict_b = np.where(predict >= threshold, 1, 0)
@@ -48,12 +48,12 @@ def get_metrics(predict, target,run_clDice = False, threshold=0.5):
         auc = 1
     else:
         auc = roc_auc_score(target, predict)
-    acc = (tp + tn) / (tp + fp + fn + tn)
-    pre = tp / (tp + fp)
-    sen = tp / (tp + fn)
-    spe = tn / (tn + fp)
-    iou = tp / (tp + fp + fn)
-    DSC = 2 * pre * sen / (pre + sen)
+    acc = (tp + tn) / (tp + fp + fn + tn + eps)
+    pre = tp / (tp + fp + eps)
+    sen = tp / (tp + fn + eps)
+    spe = tn / (tn + fp + eps)
+    iou = tp / (tp + fp + fn + eps)
+    DSC = 2 * pre * sen / (pre + sen + eps)
     return {
         "DSC": np.round(DSC, 4),
         "Acc": np.round(acc, 4),

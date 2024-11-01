@@ -30,7 +30,7 @@ def keep_largest_connected_component(data):
         # Find the largest component by area
         largest_region = max(regions, key=lambda r: r.area)
         # Create a mask with only the largest component
-        data = (label_image == largest_region.label).astype(np.uint8) * i
+        data = (label_image == largest_region.label).astype(np.uint8) 
     return data
 
 def get_connect_components(data, min_size=None):
@@ -74,7 +74,5 @@ def remove_small_vessles(
     # Use distance transform to determine the distance of each pixel to the nearest background pixel
     dist_transform = cv2.distanceTransform(blood_vessel_image.astype(np.uint8), cv2.DIST_L2, 3).astype(np.uint8)
     # Determine the regions of small vessels based on the distance transform results
-    small_vessels = (dist_transform < min_width).astype(np.uint8)
-    # Remove small vessels from the original image
-    removed_small_vessels = (blood_vessel_image - small_vessels > 0).astype(np.uint8)
-    return removed_small_vessels
+    large_vessel = (dist_transform > min_width).astype(np.uint8)
+    return large_vessel

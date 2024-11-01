@@ -8,7 +8,7 @@ data_type = 'Cerebral_DERIVED_S'
 data_list_path = f'/home/jepark/codes/Algorithms_Vessel_2D/Dataset/{data_type}.json'
 with open(data_list_path, 'r') as f:
     files = json.load(f)
-image_root = '/mnt/d/data/aiminer-neuroangio-june17-2024-all'
+image_root = '/data/aiminer-neuroangio-june17-2024-all'
 
 save_dir = os.path.join(image_root, 'preprocessed_dias', data_type, 'aip_npy')
 os.makedirs(save_dir, exist_ok=True)

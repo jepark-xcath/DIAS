@@ -47,12 +47,11 @@ class Train_dataset(Dataset):
             img = img[np.newaxis]
         gt = cv2.imread(os.path.join(
                 self.labels_path, f"label_{img_id.split('_')[1].split('.')[0]}.png"), 0)
-        gt = np.array(gt/255)[np.newaxis]
-        # gt = np.load(os.path.join(self.labels_path,img_id))[np.newaxis]
-        # print('dataset @46', img.shape, gt.shape)
+        if np.max(gt) > 1:
+            gt = gt / np.max(gt)
+        gt = np.array(gt)[np.newaxis]
         img = self.seq_DA(img)
         gt = self.gt_DA(gt)
-        # print('dataset @48', img.shape, gt.shape)
         return img, gt.long()
 
     def __len__(self):
@@ -83,12 +82,12 @@ class Valid_dataset(Train_dataset):
                 img = img[np.newaxis]
             images.append(img)            
 
-            image_id = image_id.split('s')[-1].split('_')[0].split('.')[0]            
+            image_id = image_id.split('_')[1].split('.')[0]            
             gt = cv2.imread(os.path.join(
-                self.labels_path, f"label_s{image_id}.png"), 0)
-            # print('dataset @84', image_id, gt.shape)
-            gt = np.array(gt/255)[np.newaxis]
-            # gt = np.load(os.path.join(self.labels_path,f"{i}.npy"))[np.newaxis]
+                self.labels_path, f"label_{image_id}.png"), 0)
+            if np.max(gt) > 1:
+                gt = gt / np.max(gt)
+            gt = np.array(gt)[np.newaxis]
             gts.append(gt)
 
         return images, gts

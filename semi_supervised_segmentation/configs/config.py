@@ -22,13 +22,13 @@ _C.WANDB.MODE = "offline"
 # Data settings
 # -----------------------------------------------------------------------------
 _C.DATASET = CN()
-_C.DATASET.TRAIN_IMAGE_PATH = "/ai/data/data/vessel/DIAS/training/images"
-_C.DATASET.TRAIN_LABEL_PATH = "/ai/data/data/vessel/DIAS/training/labels"
-_C.DATASET.UNLABEL_IMAGE_PATH = "/ai/data/data/vessel/DIAS/training/unlabel"
-_C.DATASET.VAL_IMAGE_PATH = "/ai/data/data/vessel/DIAS/validation/images"
-_C.DATASET.VAL_LABEL_PATH = "/ai/data/data/vessel/DIAS/validation/labels"
-_C.DATASET.TEST_IMAGE_PATH = "/ai/data/data/vessel/DIAS/test/images"
-_C.DATASET.TEST_LABEL_PATH = "/ai/data/data/vessel/DIAS/test/labels"
+_C.DATASET.TRAIN_IMAGE_PATH = "/home/jepark/data/DIAS/training/aip_npy"
+_C.DATASET.TRAIN_LABEL_PATH = "/home/jepark/data/DIAS/training/labels_main_vessel"
+_C.DATASET.VAL_IMAGE_PATH = "/home/jepark/data/DIAS/validation/aip_npy"
+_C.DATASET.VAL_LABEL_PATH = "/home/jepark/data/DIAS/validation/labels_main_vessel"
+# _C.DATASET.TEST_IMAGE_PATH = "/home/jepark/data/DIAS/test/aip_npy"
+# _C.DATASET.TEST_LABEL_PATH = "/home/jepark/data/DIAS/test/labels"
+_C.DATASET.TEST_IMAGE_PATH = "/home/jepark/data/aiminer-neuroangio-june17-2024-all/preprocessed_dias/Cerebral_DERIVED_S/images_npy/step1"
 _C.DATASET.NUM_LABEL = 1
 _C.DATASET.NUM_UNLABEL = 30
 _C.DATASET.STRIDE = 32

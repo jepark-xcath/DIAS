@@ -11,9 +11,9 @@ _C.WORLD_SIZE = 1
 _C.SEED = 1234
 _C.AMP = True
 _C.EXPERIMENT_ID = ""
-_C.SAVE_DIR = "/mnt/d/data/train_results"
+_C.SAVE_DIR = "/home/jepark/data/train_results"
 _C.MODEL_PATH = ""
-_C.INFERENCE_RESULT_PATH = "/mnt/d/data/inference_results"
+_C.INFERENCE_RESULT_PATH = "/home/jepark/data/inference_results"
 
 _C.WANDB = CN()
 _C.WANDB.PROJECT = "CVSS_FSL"
@@ -23,23 +23,23 @@ _C.WANDB.MODE = "offline"
 # Data settings
 # -----------------------------------------------------------------------------
 _C.DATASET = CN()
-_C.DATASET.TRAIN_IMAGE_PATH = "/mnt/d/data/DIAS/training/aip_npy"
-_C.DATASET.TRAIN_LABEL_PATH = "/mnt/d/data/DIAS/training/labels"
-_C.DATASET.VAL_IMAGE_PATH = "/mnt/d/data/DIAS/validation/aip_npy"
-_C.DATASET.VAL_LABEL_PATH = "/mnt/d/data/DIAS/validation/labels"
-# _C.DATASET.TEST_IMAGE_PATH = "/mnt/d/data/DIAS/test/aip_npy"
-# _C.DATASET.TEST_LABEL_PATH = "/mnt/d/data/DIAS/test/labels"
-_C.DATASET.TEST_IMAGE_PATH = "/mnt/d/data/aiminer-neuroangio-june17-2024-all/preprocessed_dias/Cerebral_DERIVED_S/images_npy/step1"
+_C.DATASET.TRAIN_IMAGE_PATH = "/home/jepark/data/DIAS/training/aip_npy"
+_C.DATASET.TRAIN_LABEL_PATH = "/home/jepark/data/DIAS/training/labels_main_vessel"
+_C.DATASET.VAL_IMAGE_PATH = "/home/jepark/data/DIAS/validation/aip_npy"
+_C.DATASET.VAL_LABEL_PATH = "/home/jepark/data/DIAS/validation/labels_main_vessel"
+# _C.DATASET.TEST_IMAGE_PATH = "/home/jepark/data/DIAS/test/aip_npy"
+# _C.DATASET.TEST_LABEL_PATH = "/home/jepark/data/DIAS/test/labels"
+_C.DATASET.TEST_IMAGE_PATH = "/home/jepark/data/aiminer-neuroangio-june17-2024-all/preprocessed_dias/Cerebral_DERIVED_S/images_npy/step1"
 _C.DATASET.TEST_LABEL_PATH = None
 _C.DATASET.STRIDE = 32
-_C.DATASET.PATCH_SIZE = (128, 128)
+_C.DATASET.PATCH_SIZE = (224, 224)
 _C.DATASET.NUM_EACH_EPOCH = 20000
 _C.DATASET.WITH_VAL = True
 
 _C.DATALOADER = CN()
-_C.DATALOADER.BATCH_SIZE = 64
+_C.DATALOADER.BATCH_SIZE = 32
 _C.DATALOADER.PIN_MEMORY = True
-_C.DATALOADER.NUM_WORKERS = 8
+_C.DATALOADER.NUM_WORKERS = 16
 
 # -----------------------------------------------------------------------------
 # Model settings
@@ -54,7 +54,7 @@ _C.TRAIN.DO_BACKPROP = False
 _C.TRAIN.VAL_NUM_EPOCHS = 1
 _C.TRAIN.SAVE_PERIOD = 1
 _C.TRAIN.MNT_MODE = "max"
-_C.TRAIN.MNT_METRIC = "DSC"
+_C.TRAIN.MNT_METRIC = "AUC"
 _C.TRAIN.EARLY_STOPPING = 100
 
 _C.TRAIN.EPOCHS = 100

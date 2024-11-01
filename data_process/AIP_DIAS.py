@@ -4,7 +4,7 @@ import numpy as np
 
 # Define the folder path
 dataset = 'test'
-folder_path = f"/mnt/d/data/DIAS/{dataset}/images"
+folder_path = f"/data/DIAS/{dataset}/images"
 
 # Get all files in the folder
 files = os.listdir(folder_path)
@@ -28,7 +28,7 @@ for file in files:
         sequence_images[sequence_id].append(image)
 
 # Create a new folder to save the merged images
-output_folder = f"/mnt/d/data/DIAS/{dataset}/aip_npy"
+output_folder = f"/data/DIAS/{dataset}/aip_npy"
 os.makedirs(output_folder, exist_ok=True)
 
 # Merge the images for each sequence ID and perform maximum intensity projection
