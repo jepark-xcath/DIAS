@@ -124,7 +124,7 @@ class Test_dataset(Train_dataset):
         self.images_path = images_path
         self.patch_size = config.DATASET.PATCH_SIZE
         self.stride = config.DATASET.STRIDE
-        self.image_files = list(sorted(os.listdir(images_path)))[:100]
+        self.image_files = list(sorted(os.listdir(images_path)))[80:100]
         self.img_list = self.read_image(self.image_files)
         self.img_patch = self.get_patch(
             self.img_list, self.patch_size, self.stride)

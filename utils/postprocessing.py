@@ -2,7 +2,7 @@ import cv2
 import numpy as np 
 from skimage.measure import label, regionprops
 from skimage.morphology import remove_small_objects
-
+from skimage.morphology import binary_opening, disk
 
 def remove_smalls(raw_data, min_size=64):
     """
@@ -15,6 +15,21 @@ def remove_smalls(raw_data, min_size=64):
     """
     return remove_small_objects(
         raw_data.astype(np.bool_), min_size=min_size).astype(np.uint8)
+
+def remove_small_vessles(
+    blood_vessel_image: np.array, kernel: int = 2
+) -> np.array:
+    """
+    Remove small vessels from a binary blood vessel image.
+    Args:
+        blood_vessel_image (np.array): Binary blood vessel image.
+        min_width (int): Minimum width of small vessels to remove.
+    Returns:
+        np.array: Binary blood vessel image with small vessels removed.
+    """
+    binary_image = ~binary_opening(blood_vessel_image, disk(kernel))
+    binary_image = blood_vessel_image - binary_image
+    return (binary_image > 0).astype(np.uint8)
 
 def keep_largest_connected_component(data):
     """
@@ -59,20 +74,3 @@ def get_connect_components(data, min_size=None):
         # Ensure the background remains black
         data[colored_data == 0] = [0, 0, 0]
     return data
-
-def remove_small_vessles(
-    blood_vessel_image: np.array, min_width: int = 1
-) -> np.array:
-    """
-    Remove small vessels from a binary blood vessel image.
-    Args:
-        blood_vessel_image (np.array): Binary blood vessel image.
-        min_width (int): Minimum width of small vessels to remove.
-    Returns:
-        np.array: Binary blood vessel image with small vessels removed.
-    """
-    # Use distance transform to determine the distance of each pixel to the nearest background pixel
-    dist_transform = cv2.distanceTransform(blood_vessel_image.astype(np.uint8), cv2.DIST_L2, 3).astype(np.uint8)
-    # Determine the regions of small vessels based on the distance transform results
-    large_vessel = (dist_transform > min_width).astype(np.uint8)
-    return large_vessel

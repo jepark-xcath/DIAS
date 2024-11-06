@@ -32,13 +32,13 @@ _C.DATASET.TEST_IMAGE_PATH = "/home/jepark/data/aiminer-neuroangio-june17-2024-a
 _C.DATASET.NUM_LABEL = 1
 _C.DATASET.NUM_UNLABEL = 30
 _C.DATASET.STRIDE = 32
-_C.DATASET.PATCH_SIZE = (64, 64)
+_C.DATASET.PATCH_SIZE = (224, 224)
 _C.DATASET.NUM_EACH_EPOCH = 40000
 
 _C.DATALOADER = CN()
-_C.DATALOADER.BATCH_SIZE = 64
+_C.DATALOADER.BATCH_SIZE = 32
 _C.DATALOADER.PIN_MEMORY = True
-_C.DATALOADER.NUM_WORKERS = 8
+_C.DATALOADER.NUM_WORKERS = 16
 
 # -----------------------------------------------------------------------------
 # Model settings
